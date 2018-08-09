@@ -23,12 +23,12 @@ OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
 OE_ADDONS_PATH="$OE_HOME_EXT/addons,$OE_HOME/custom/addons"
 #The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_WKHTMLTOPDF="True"
+INSTALL_WKHTMLTOPDF="False"
 #Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
 OE_PORT="8069"
 #Choose the Odoo version which you want to install. For example: 10.0, 9.0, 8.0, 7.0 or saas-6. When using 'trunk' the master version will be installed.
 #IMPORTANT! This script contains extra libraries that are specifically needed for Odoo 10.0
-OE_VERSION="10.0"
+OE_VERSION="11.0"
 # Set this to True if you want to install Odoo 10 Enterprise!
 IS_ENTERPRISE="False"
 #set the superadmin password
@@ -39,7 +39,7 @@ OE_CONFIG="${OE_USER}-server"
 OE_PYTHON_ENV="${OE_HOME}/python_env"
 
 #PostgreSQL Version
-OE_POSTGRESQL_VERSION="9.6"
+OE_POSTGRESQL_VERSION="10"
 
 
 
@@ -70,7 +70,7 @@ apt-get upgrade -y >> ./install_log
 #--------------------------------------------------
 # Add official repository
 cat <<EOF > /etc/apt/sources.list.d/pgdg.list
-deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
 EOF
 
 echo -e "\n---- Install PostgreSQL Repo Key ----"
@@ -88,7 +88,7 @@ su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
 # Install Dependencies
 #--------------------------------------------------
 echo -e "\n---- Install packages ----"
-apt-get install libjpeg-dev curl wget git python-pip gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libsasl2-dev node-clean-css node-less python-gevent -y >> ./install_log
+apt-get install libjpeg-dev curl wget git python-pip python-virtualenv gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libsasl2-dev node-clean-css node-less python-gevent -y >> ./install_log
 
 
 
@@ -143,7 +143,11 @@ fi
 echo -e "\n---- Create custom module directory ----"
 su $OE_USER -c "mkdir $OE_HOME/custom" >> ./install_log
 su $OE_USER -c "mkdir $OE_HOME/custom/addons" >> ./install_log
-
+	apt-get install nodejs npm -y >> ./install_log
+	npm install -g less
+	npm install -g less-plugin-clean-css
+	echo -e "\n--- Create symlink for node"
+	ln -s /usr/bin/nodejs /usr/bin/node
 
 echo -e "\n---- Setting permissions on home folder ----"
 chown -R $OE_USER:$OE_USER $OE_HOME/*
@@ -217,7 +221,7 @@ echo -e "\n---- Install python packages and virtualenv ----"
 pip install  virtualenv >> ./install_log
 mkdir $OE_PYTHON_ENV >> ./install_log
 virtualenv $OE_PYTHON_ENV -p /usr/bin/python2.7 >> ./install_log
-source /odoo/python_env/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
+source /$OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
 deactivate
 
 
@@ -233,8 +237,8 @@ Documentation=https://odoo.com
 After=network.target
 
 [Service]
-User=odoo
-Group=odoo
+User=$OE_USER
+Group=$OE_USER
 ExecStart=$OE_PYTHON_ENV/bin/python $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
 
 
