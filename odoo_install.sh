@@ -220,7 +220,7 @@ chmod 640 /etc/${OE_CONFIG}.conf
 echo -e "\n---- Install python packages and virtualenv ----"
 mkdir $OE_PYTHON_ENV >> ./install_log
 virtualenv $OE_PYTHON_ENV -p /usr/bin/python2.7 >> ./install_log
-source /$OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
+source $OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
 deactivate
 
 
