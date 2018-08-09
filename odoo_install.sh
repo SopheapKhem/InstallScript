@@ -88,7 +88,7 @@ su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
 # Install Dependencies
 #--------------------------------------------------
 echo -e "\n---- Install packages ----"
-apt-get install libjpeg-dev curl wget git python-pip python-virtualenv gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libsasl2-dev node-clean-css node-less python-gevent -y >> ./install_log
+apt-get install libjpeg-dev libevent-dev gcc curl wget git python-pip python-virtualenv virtualenv gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libssl-dev libsasl2-dev node-clean-css node-less libxslt-dev python-gevent -y >> ./install_log
 
 
 
@@ -218,7 +218,6 @@ chmod 640 /etc/${OE_CONFIG}.conf
 
 
 echo -e "\n---- Install python packages and virtualenv ----"
-pip install  virtualenv >> ./install_log
 mkdir $OE_PYTHON_ENV >> ./install_log
 virtualenv $OE_PYTHON_ENV -p /usr/bin/python2.7 >> ./install_log
 source /$OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
