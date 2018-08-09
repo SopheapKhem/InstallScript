@@ -1,10 +1,10 @@
 #!/bin/bash
 ################################################################################
-# Script for installing Odoo V10 on Debian (could be used for other version too)
+# Script for installing Odoo V10 on Ubuntu (could be used for other version too)
 # Based on installation script by Yenthe Van Ginneken https://github.com/Yenthe666/InstallScript
 # Author: William Olhasque
 #-------------------------------------------------------------------------------
-# This script will install Odoo on your Debian Jessie server. It can install multiple Odoo instances
+# This script will install Odoo on your Ubuntu server. It can install multiple Odoo instances
 # in one Ubuntu because of the different xmlrpc_ports
 #-------------------------------------------------------------------------------
 # Make a new file:
@@ -143,11 +143,7 @@ fi
 echo -e "\n---- Create custom module directory ----"
 su $OE_USER -c "mkdir $OE_HOME/custom" >> ./install_log
 su $OE_USER -c "mkdir $OE_HOME/custom/addons" >> ./install_log
-	apt-get install nodejs npm -y >> ./install_log
-	npm install -g less
-	npm install -g less-plugin-clean-css
-	echo -e "\n--- Create symlink for node"
-	ln -s /usr/bin/nodejs /usr/bin/node
+
 
 echo -e "\n---- Setting permissions on home folder ----"
 chown -R $OE_USER:$OE_USER $OE_HOME/*
