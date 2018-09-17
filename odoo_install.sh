@@ -153,59 +153,20 @@ echo -e "* Create server config file"
 cat <<EOF > /etc/${OE_CONFIG}.conf
 [options]
 addons_path = $OE_ADDONS_PATH
+logfile = /var/log/$OE_USER/$OE_CONFIG
 admin_passwd =  $OE_SUPERADMIN
-csv_internal_sep = ,
 data_dir = /var/lib/$OE_USER/.local/share/Odoo
 db_host = False
-db_maxconn = 64
-db_name = False
-db_password = False
 db_port = False
-db_template = template1
 db_user = $OE_USER
-dbfilter = .*
-debug_mode = False
-demo = {}
-email_from = False
-geoip_database = /usr/share/GeoIP/GeoLiteCity.dat
-import_partial =
-limit_memory_hard = 2684354560
-limit_memory_soft = 2147483648
+db_password = False
+limit_memory_hard = 1677721600
+limit_memory_soft = 629145600
 limit_request = 8192
-limit_time_cpu = 60
-limit_time_real = 120
-list_db = True
-log_db = False
-log_db_level = warning
-log_handler = :INFO
-log_level = info
-logfile = /var/log/$OE_USER/$OE_CONFIG
-logrotate = True
-longpolling_port = 8072
+limit_time_cpu = 600
+limit_time_real = 1200
 max_cron_threads = 1
-osv_memory_age_limit = 1.0
-osv_memory_count_limit = False
-pg_path = None
-pidfile = None
-proxy_mode = True
-reportgz = False
-server_wide_modules = None
-smtp_password = False
-smtp_port = 25
-smtp_server = localhost
-smtp_ssl = False
-smtp_user = False
-syslog = False
-test_commit = False
-test_enable = False
-test_file = False
-test_report_directory = False
-translate_modules = ['all']
-unaccent = False
-without_demo = False
 workers = 2
-xmlrpc = True
-xmlrpc_interface =
 xmlrpc_port = $OE_PORT
 EOF
 
@@ -229,9 +190,13 @@ cat <<EOF > ~/$OE_CONFIG.service
 [Unit]
 Description=Odoo server
 Documentation=https://odoo.com
-After=network.target
+Requires=postgresql.service
+After=postgresql.service
 
 [Service]
+Type=simple
+PermissionsStartOnly=true
+SyslogIdentifier=$OE_HOME_EXT
 User=$OE_USER
 Group=$OE_USER
 ExecStart=$OE_PYTHON_ENV/bin/python $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
