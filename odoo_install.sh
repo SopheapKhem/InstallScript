@@ -47,7 +47,7 @@ OE_POSTGRESQL_VERSION="10"
 ###  WKHTMLTOPDF download links
 ## === Debian Jessie
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
-WKHTMLTOX_X64=https://nightly.odoo.com/extra/wkhtmltox-0.12.1.2_linux-jessie-amd64.deb
+WKHTMLTOX_X64=https://builds.wkhtmltopdf.org/0.12.1.3/wkhtmltox_0.12.1.3-1~bionic_amd64.deb
 
 #
 # Install dialog
@@ -88,8 +88,7 @@ su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
 # Install Dependencies
 #--------------------------------------------------
 echo -e "\n---- Install packages ----"
-apt-get install libjpeg-dev libevent-dev gcc curl wget git python-pip python-virtualenv virtualenv gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libssl-dev libsasl2-dev node-clean-css node-less libxslt-dev python-gevent -y >> ./install_log
-
+sudo apt install git python3-pip build-essential wget python3-dev python3-venv python3-wheel libxslt-dev libzip-dev libldap2-dev libsasl2-dev python3-setuptools node-less
 
 
 
@@ -176,10 +175,9 @@ chmod 640 /etc/${OE_CONFIG}.conf
 
 echo -e "\n---- Install python packages and virtualenv ----"
 mkdir $OE_PYTHON_ENV >> ./install_log
-virtualenv $OE_PYTHON_ENV -p /usr/bin/python2 >> ./install_log
-source $OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
-deactivate
-exit
+python3 -m venv $OE_PYTHON_ENV>> ./install_log
+source $OE_PYTHON_ENV/bin/activate && pip3 install wheel && pip3 install -r $OE_HOME_EXT/requirements.txt && deactivate && exit>> ./install_log
+
 
 
 #--------------------------------------------------
@@ -192,16 +190,15 @@ cat <<EOF > ~/$OE_CONFIG.service
 Description=Odoo server
 Documentation=https://odoo.com
 Requires=postgresql.service
-After=postgresql.service
+After=network.target postgresql.service
 
 [Service]
 Type=simple
-PermissionsStartOnly=true
 SyslogIdentifier=$OE_HOME_EXT
+PermissionsStartOnly=true
 User=$OE_USER
 Group=$OE_USER
-ExecStart=$OE_PYTHON_ENV/bin/python2 $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
-
+ExecStart=$OE_PYTHON_ENV/bin/python3 $OE_HOME_EXT/odoo-bin -c /etc/${OE_CONFIG}.conf
 
 [Install]
 WantedBy=multi-user.target
