@@ -176,9 +176,10 @@ chmod 640 /etc/${OE_CONFIG}.conf
 
 echo -e "\n---- Install python packages and virtualenv ----"
 mkdir $OE_PYTHON_ENV >> ./install_log
-virtualenv $OE_PYTHON_ENV -p /usr/bin/python2.7 >> ./install_log
+virtualenv $OE_PYTHON_ENV -p /usr/bin/python2 >> ./install_log
 source $OE_PYTHON_ENV/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
 deactivate
+exit
 
 
 #--------------------------------------------------
@@ -199,7 +200,7 @@ PermissionsStartOnly=true
 SyslogIdentifier=$OE_HOME_EXT
 User=$OE_USER
 Group=$OE_USER
-ExecStart=$OE_PYTHON_ENV/bin/python $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
+ExecStart=$OE_PYTHON_ENV/bin/python2 $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
 
 
 [Install]
